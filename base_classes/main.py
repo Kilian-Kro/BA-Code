@@ -113,7 +113,7 @@ def main():
                       (48.736504812479225, 12.332213499138453),
                       (47.83164829871676, 12.357166952827761)])  # 10883.69 km², 417.43 km
 
-    # print(sector2.sector_area())
+    print(sector2.sector_area())
     # print("KM: 10883.69 NM: " + str(geopy.units.nautical(kilometers=10883.69)))
 
     # obj = dict(type='Polygon', coordinates=[
@@ -126,13 +126,13 @@ def main():
     # print('area km2:' + str(area_km2))
 
     # loop for 50 times
-    for i in range(100):
-        sector2.create_traffic_loop(50, 20)
-
-    g = Gianazza(sector2)
-    g.f15(10)
-    g.f60(10)
-    g.inter_hori()
+    # for i in range(100):
+    #     sector2.create_traffic_loop(50, 20)
+#
+    # g = Gianazza(sector2)
+    # g.f15(10)
+    # g.f60(10)
+    # g.inter_hori()
 
 
 #

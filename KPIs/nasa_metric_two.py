@@ -25,7 +25,7 @@ class NasaTwo:
                 if time == self.sector.passed_time - timedelta(minutes=self.time_threshold):
                     for plane_ago in planes:
                         # check if the heading changed more than 15 degrees
-                        if abs(plane.heading - plane_ago.heading) > 15 and plane.get_callsign() == plane_ago.get_callsign():
+                        if abs(plane.get_heading() - plane_ago.get_heading()) > 15 and plane.get_callsign() == plane_ago.get_callsign():
                             count_of_changed_headings += 1
                     break
         return count_of_changed_headings
@@ -49,7 +49,7 @@ class NasaTwo:
             for time, planes in self.sector.history_planes:
                 if time == self.sector.passed_time - timedelta(minutes=self.time_threshold):
                     for plane_ago in planes:
-                        if abs(plane.altitude - plane_ago.altitude) > 750 and plane.get_callsign() == plane_ago.get_callsign():
+                        if abs(plane.get_altitude() - plane_ago.get_altitude()) > 750 and plane.get_callsign() == plane_ago.get_callsign():
                             count_of_changed_altitudes += 1
                     break
         return count_of_changed_altitudes

@@ -56,7 +56,8 @@ class NasaOne:
                     w_ij = w_ij + d_ij ** 2 + s_h ** 2 * h_ij ** 2  # Equation 6 in paper
                     w_ij_d_ij = w_ij * d_ij
                     helper = helper + (w_ij_d_ij / w_ij)  # Equation 5 in paper
-                    # Both variables are set to 0. again, to calculate the next pair of planes
+        if helper == 0:
+            return 0
         return n / helper
 
     def c_6(self):
@@ -76,6 +77,8 @@ class NasaOne:
                     w_ij_h_ij = w_ij * h_ij
                     helper = helper + (w_ij_h_ij / w_ij)  # Equation 12 in paper
                     # Both variables are set to 0. again, to calculate the next pair of planes
+        if helper == 0:
+            return 0
         return n / helper
 
     def c_7(self):
@@ -151,6 +154,8 @@ class NasaOne:
         var = 0.
         for plane in self.sector.get_planes():
             var += (plane.get_speed() - s) ** 2
+        if n == 0:
+            return 0
         var = var / n
         return var
 
@@ -165,6 +170,8 @@ class NasaOne:
         for plane in self.sector.get_planes():
             var += (plane.get_speed() - s) ** 2
         var = var / n
+        if n == 0:
+            return 0
         return var ** 0.5 / s
 
     def c_16(self):

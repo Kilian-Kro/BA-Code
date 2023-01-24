@@ -83,7 +83,7 @@ class Metron:
     def walc(self):
         count = 0
         for plane in self.sector.get_planes():
-            if plane.get_climb_rate() != 0:
+            if plane.get_climbrate() != 0:
                 count += 1
         return count
 

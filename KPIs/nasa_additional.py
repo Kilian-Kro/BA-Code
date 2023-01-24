@@ -19,7 +19,7 @@ class NasaAdditional:
     def hdgvari(self):
         list_of_headings = []
         for plane in self.sector.get_planes():
-            list_of_headings.append(plane.heading)
+            list_of_headings.append(plane.get_heading())
         mean = sum(list_of_headings) / len(list_of_headings)
         variance = sum((x - mean) ** 2 for x in list_of_headings) - 1 / len(list_of_headings)
         return variance
@@ -33,7 +33,7 @@ class NasaAdditional:
             for plane2 in self.sector.get_planes():
                 if plane != plane2:
                     if self.are_in_conflict(plane, plane2):
-                        list_of_headings.append(plane.heading)
+                        list_of_headings.append(plane.get_heading())
         if len(list_of_headings) == 0:
             return 0
         else:
@@ -74,7 +74,7 @@ class NasaAdditional:
     def altvari(self):
         list_of_altitudes = []
         for plane in self.sector.get_planes():
-            list_of_altitudes.append(plane.altitude)
+            list_of_altitudes.append(plane.get_altitude())
         mean = sum(list_of_altitudes) / len(list_of_altitudes)
         variance = sum((x - mean) ** 2 for x in list_of_altitudes) - 1 / len(list_of_altitudes)
         return variance, mean

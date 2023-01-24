@@ -841,7 +841,7 @@ class App(customtkinter.CTk):
         label_total_wl_value.grid(row=4, column=1, padx=20, pady=10)
 
         button = customtkinter.CTkButton(master=self.window8, text="Close", command=self.button_event_8)
-        button.grid(row=1, column=0, padx=20, pady=10, sticky="SE")
+        button.grid(row=1, column=0, padx=20, pady=10)
 
     def button_event_8(self):
         self.window8.destroy()

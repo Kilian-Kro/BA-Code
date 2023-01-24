@@ -52,6 +52,9 @@ class Gianazza:
             distance = speed_in_ms * (timeframe * 60)  # 10 seconds
             return distance / 1000
 
+        if len(self.sector.get_planes()) > 1:
+            return 1
+
         for plane in self.sector.get_planes():
             for other_plane in self.sector.get_planes():
                 if plane != other_plane and other_plane.get_altitude() - 200 < plane.get_altitude() < other_plane.get_altitude() + 200:
