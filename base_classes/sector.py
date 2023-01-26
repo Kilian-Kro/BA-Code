@@ -184,6 +184,7 @@ class Sector:
         self.passed_time += timedelta(seconds=time)
 
     def create_traffic_loop(self, number_of_planes, variance):
+        variance = 0
         time = 10
         self.update_current_planes(self.current_planes, time)
 

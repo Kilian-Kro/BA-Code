@@ -18,7 +18,7 @@ class WJTHC:
         return len(self.sector.get_planes())  # / max([len(planes) for time, planes in self.sector.history_planes])
 
     def aircraft_density_one(self):
-        return len(self.sector.get_planes()) / self.sector.sector_volume()  # ToDo add occupied airspace
+        return len(self.sector.get_planes()) / self.sector.sector_volume()  # ToDO add occupied airspace
 
     def aircraft_density_two(self):
         return len(self.sector.get_planes()) / self.sector.sector_volume()  # ToDo: Currently the same as

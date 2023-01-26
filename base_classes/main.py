@@ -1,32 +1,25 @@
-import geopy.units
+import random
+
+import geopy
+from geopy.units import nm
 
 from KPIs.gianzza import Gianazza
+from base_classes.Heading import Heading
+from base_classes.airplane import Airplane
 from sector import Sector
 
 
 def main():
-    """
+
     sector1 = Sector('Test Sector', 0, 50000, [(11.381, 47.994),
                                                (11.376, 48.284),
                                                (11.860, 48.288),
                                                (11.861, 47.998)])
 
-    def fill_sector(sector, num_planes):
-        planes = []
-        for i in range(int(random.uniform(1, num_planes))):
-            # Generate random position for the plane within the test_sector
-            pos_x = sector.corner_points[0][0] + random.uniform(0, 1) * (
-                    sector.corner_points[2][0] - sector.corner_points[0][0])
-            pos_y = sector.corner_points[0][1] + random.uniform(0, 1) * (
-                    sector.corner_points[2][1] - sector.corner_points[0][1])
-            altitude = random.uniform(sector.floor, sector.ceiling)
-            speed = random.uniform(0, 400)
-            climbrate = random.uniform(-3000, 3000)
-            heading = int(random.uniform(0, 3600))
-            plane = Airplane(f'Plane {i}', heading, altitude, speed, climbrate, pos_x, pos_y)
-            planes.append(plane)
-        return planes
+    for t in range(0, 60):
+        sector1.create_traffic_loop(30, 0)
 
+    """
     sector1.update_current_planes(fill_sector(sector1, 10), 30)
     sector1.update_current_planes(fill_sector(sector1, 15), 30)
     sector1.update_current_planes(fill_sector(sector1, 20), 30)
@@ -107,13 +100,22 @@ def main():
     print(wjthc.degrees_of_freedom_index())
     print(wjthc.coordination_taskload_index())
     """
+    print("Gianazza")
+    gianazza = Gianazza(sector1)
+    print(gianazza.v())
+    print(gianazza.nb())
+    print(gianazza.avg_vs())
+    print(gianazza.f15(5))
+    print(gianazza.f60(5))
+    print(gianazza.inter_hori())
 
-    sector2 = Sector('Test Sector', 0, 50000,
-                     [(47.79736992227051, 10.938828673978394), (48.72458082631016, 10.87423007609716),
-                      (48.736504812479225, 12.332213499138453),
-                      (47.83164829871676, 12.357166952827761)])  # 10883.69 km², 417.43 km
 
-    print(sector2.sector_area())
+    # sector2 = Sector('Test Sector', 0, 50000,
+    #                  [(47.79736992227051, 10.938828673978394), (48.72458082631016, 10.87423007609716),
+    #                   (48.736504812479225, 12.332213499138453),
+    #                   (47.83164829871676, 12.357166952827761)])  # 10883.69 km², 417.43 km
+#
+    # print(sector2.sector_area())
     # print("KM: 10883.69 NM: " + str(geopy.units.nautical(kilometers=10883.69)))
 
     # obj = dict(type='Polygon', coordinates=[
@@ -128,11 +130,13 @@ def main():
     # loop for 50 times
     # for i in range(100):
     #     sector2.create_traffic_loop(50, 20)
+
+
 #
-    # g = Gianazza(sector2)
-    # g.f15(10)
-    # g.f60(10)
-    # g.inter_hori()
+# g = Gianazza(sector2)
+# g.f15(10)
+# g.f60(10)
+# g.inter_hori()
 
 
 #
@@ -156,6 +160,12 @@ def main():
     print(sector2.is_pos_in_sector(49.0383776,
                                    11.6821396))  # no
 """
+
+print(Heading.stat_sub(10, 10))  # 0
+print(Heading.stat_sub(10, 90))  # 280
+print(Heading.stat_sub(90, 180))
+# 340
+
 
 if __name__ == "__main__":
     main()

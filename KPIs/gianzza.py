@@ -39,43 +39,52 @@ class Gianazza:
     def f60(self, point_in_time):
         return self.get_flows(point_in_time, 60)
 
-    # number of potential crossings (irrespective of the aircraft direction on their trajectories)
-    # with angle greater than 20 degrees.
-    # Potential is defined as 5 minute Window
-    # ToDO fix type error
+    # number of potential crossings with angle greater than 20 degrees.
+    # Potential is defined as crossing that would take place within a 5-minute Window
     def inter_hori(self):
-        timeframe = 5
+        timeframe = 5  # in minutes
         potential_crossings = 0
 
+        # Helper function to calculate the distance a plane will travel in timeframe
         def get_distance(speed_knts):
             speed_in_ms = speed_knts * 0.514444  # converts speed from knots to m/s
-            distance = speed_in_ms * (timeframe * 60)  # 10 seconds
-            return distance / 1000
+            distance = speed_in_ms * (timeframe * 60)  # convert to seconds
+            return distance / 1000  # convert to km
 
-        if len(self.sector.get_planes()) > 1:
+        # Avoid division by zero for an empty sector
+        if len(self.sector.get_planes()) < 1:
             return 1
 
+        # Iterate over all planes in the sector and check for potential crossings
         for plane in self.sector.get_planes():
+            potential_crossings = 0
             for other_plane in self.sector.get_planes():
+                # Check if planes are in the same altitude range
                 if plane != other_plane and other_plane.get_altitude() - 200 < plane.get_altitude() < other_plane.get_altitude() + 200:
 
                     p_plane = Point(plane.get_position_x(), plane.get_position_y())
                     p_other_plane = Point(other_plane.get_position_x(), other_plane.get_position_y())
 
+                    # Calculate the new position of the plane after timeframe
                     new_pos_plane = geodesic(kilometers=get_distance(plane.get_speed())).destination(
                         p_plane, plane.get_heading())
                     new_pos_other_plane = geodesic(
                         kilometers=get_distance(other_plane.get_speed())).destination(
                         p_other_plane, other_plane.get_heading())
 
-                    if LineString([Point(p_plane), new_pos_plane]).intersects(
-                            LineString(
-                                [Point(p_other_plane), new_pos_other_plane])) and not other_plane.get_heading().subtract(
+                    # Check if the planes will cross paths in timeframe and if the angle between the planes is greater than 20 degrees
+                    # By checking if lines from their current position to their new position intersect
+                    if LineString([(p_plane.longitude, p_plane.latitude),
+                                   (new_pos_plane.longitude, new_pos_plane.latitude)]).intersects(
+                            LineString([(p_other_plane.longitude, p_other_plane.latitude), (
+                            new_pos_other_plane.longitude,
+                            new_pos_other_plane.latitude)])) and not other_plane.get_heading().subtract(
                         20) < plane.get_heading() < other_plane.get_heading().add(20):
-                        print("Intersects")
                         potential_crossings += 1
 
-        return potential_crossings
+        # Divide by two because each crossing is counted twice, since double for loop
+        # a crossing between plane A and plane B and between plane B and plane A is the same, but counted twice
+        return potential_crossings / 2
 
     # All other planes that appeared in the sector in the following time window are incoming flows
     # But if a plane is currently in the sector, it cannot be an incoming flow

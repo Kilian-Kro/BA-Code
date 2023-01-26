@@ -1,5 +1,6 @@
 from geopy.distance import geodesic
 
+from base_classes.Heading import Heading
 from base_classes.sector import Sector
 
 
@@ -27,18 +28,19 @@ class Metron:
                         count += 1
                     elif threshold_min <= self.dist_horizontal(plane, plane2) < threshold_max:
                         count += 0.5
+
+        # Halved because the double for loop counts each pair twice
         return count / 2
 
     # The score then increases again to 1 for a convergence angle of 180
     def wconvang(self):
         score = 0
-        list_of_planes = []
         for plane in self.sector.get_planes():
             for plane2 in self.sector.get_planes():
                 if plane != plane2:
                     if self.are_in_conflict(plane, plane2):
-                        conv_ang = max(plane.get_heading(), plane2.get_heading()) - min(plane.get_heading(),
-                                                                                        plane2.get_heading())
+                        conv_ang = Heading.subtract(max(plane.get_heading(), plane2.get_heading()), min(plane.get_heading(),
+                                                                                        plane2.get_heading()))
                         # if convang is between 180 and 150 or between 0 and 30, score is 1
                         if (150 < conv_ang < 180) or (0 < conv_ang < 30):
                             score += 1
@@ -51,8 +53,10 @@ class Metron:
                         # if convang is 90, score is 0:
                         elif conv_ang == 90:
                             score += 0
-        return score
 
+        return score / 2
+
+    # ToDo add to list no duplicates might be wrong
     def wconflict_nbrs(self):
         list_of_planes = []
         for plane in self.sector.get_planes():
@@ -61,6 +65,7 @@ class Metron:
                     if not self.are_in_conflict(plane, plane2) and self.dist_vertical(plane, plane2) < 2000 \
                             and self.dist_horizontal(plane, plane2) < 10:
                         self.add_to_list_no_duplicates(list_of_planes, plane, plane2)
+
         return len(list_of_planes)
 
     # Score 1 for each conflict within 10 miles
@@ -71,19 +76,28 @@ class Metron:
             for plane2 in self.sector.get_planes():
                 if plane != plane2:
                     if self.are_in_conflict(plane, plane2):
-                        # Is this only counted for one aircraft or both? AND / OR
-                        # E.g. what score is given if one plane is 9 miles and one 11 miles away?
-                        if self.sector.distance_to_border(plane) < 10 and self.sector.distance_to_border(plane2) < 10:
+                        # Score 1 for each conflict within 10 miles
+                        if self.sector.distance_to_border(plane) <= 10 and self.sector.distance_to_border(plane2) <= 10:
                             count += 1
-                        elif self.sector.distance_to_border(plane) < 20 and self.sector.distance_to_border(plane2) < 20:
+                        # Score 0.5 for each conflict within 20 miles, but more than 10 miles
+                        elif 10 < self.sector.distance_to_border(plane) <= 20 and 10 < self.sector.distance_to_border(plane2) <= 20:
                             count += 0.5
+                        # Is this only counted for one aircraft or both? AND / OR
+                        # What score is given if one plane is 9 miles and one 11 miles away?
+                        # 0.75 was chosen as the case is more severe than both planes being less than 20 miles apart,
+                        # but less severe than both planes being less than 10 miles apart
+                        elif self.sector.distance_to_border(plane) <= 10 and 10 < self.sector.distance_to_border(plane2) <= 20:
+                            count += 0.75
+                        elif 10 < self.sector.distance_to_border(plane) <= 20 and self.sector.distance_to_border(plane2) <= 10:
+                            count += 0.75
         return count
 
     # Count all aircraft where aircraft.getClimbrate != 0
     def walc(self):
         count = 0
         for plane in self.sector.get_planes():
-            if plane.get_climbrate() != 0:
+            # This is done to allow for some tolerance
+            if - 200 < plane.get_climbrate() < 200:
                 count += 1
         return count
 

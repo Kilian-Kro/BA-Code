@@ -14,11 +14,15 @@ class Heading:
 
     # Adds the value to the heading and returns the new heading
     def add(self, value):
-        value = value % 360
-        if self.heading + value > 360:
-            return self.heading + value - 360
-        else:
-            return self.heading + value
+        # Version 1
+        # value = value % 360
+        # if self.heading + value > 360:
+        #     return self.heading + value - 360
+        # else:
+        #     return self.heading + value
+
+        # simplyfied version of the above
+        return (self.heading + value) % 360
 
     def get_heading(self):
         return self.heading

@@ -52,17 +52,17 @@ class NasaAdditional:
                     # Different vertical separation requirements depending on altitude
                     if plane.get_altitude() > 29000:
                         # horizontal sep requirement is not met
-                        if dist_hor < self.min_sep_hor and dist_vert > self.min_sep_vert_high:
+                        if dist_hor < self.min_sep_hor and self.min_sep_vert_high + 2000 > dist_vert > self.min_sep_vert_high:
                             self.add_to_list_no_duplicates(list_of_potential_conflicts, plane, plane2)
                         # vertical sep requirement is not met
-                        if dist_hor > self.min_sep_hor and dist_vert < self.min_sep_vert_high:
+                        if self.min_sep_hor + 10 > dist_hor > self.min_sep_hor and dist_vert < self.min_sep_vert_high:
                             self.add_to_list_no_duplicates(list_of_potential_conflicts, plane, plane2)
                     else:
                         # horizontal sep requirement is not met
-                        if dist_hor < self.min_sep_hor and dist_vert > self.min_sep_vert_low:
+                        if dist_hor < self.min_sep_hor and self.min_sep_vert_high + 1000 > dist_vert > self.min_sep_vert_low:
                             self.add_to_list_no_duplicates(list_of_potential_conflicts, plane, plane2)
                         # vertical sep requirement is not met
-                        if dist_hor > self.min_sep_hor and dist_vert < self.min_sep_vert_low:
+                        if self.min_sep_hor + 10 > dist_hor > self.min_sep_hor and dist_vert < self.min_sep_vert_low:
                             self.add_to_list_no_duplicates(list_of_potential_conflicts, plane, plane2)
         return len(list_of_potential_conflicts)
 
