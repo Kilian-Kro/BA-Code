@@ -5,15 +5,16 @@ from geopy.distance import geodesic
 from base_classes.sector import Sector
 
 
-# above 29,000 feet, separation required is 200ft and 5 nm
-# below 29,000 feet, ToDO
+# above 29,000 feet, separation required is 2000ft and 5 nm
+# below 29,000 feet
 class NasaOne:
     def __init__(self, sector):
         self.sector: Sector = sector
 
     def c_1(self):
         n = len(self.sector.get_planes())
-        n_max = 10  # ToDo define max value
+        # !!!!!!!!!!!!! see below !!!!!!!!!!!
+        n_max = 100  # This is defined as the highest number of planes ever in the sector, no good way of obtaining this
         return n / n_max
 
     def c_2(self):
@@ -82,7 +83,7 @@ class NasaOne:
         return n / helper
 
     def c_7(self):
-        delta_h = 300  # ToDo an exact value is not specified in the paper
+        delta_h = 300  # An exact value is not specified in the paper
         counter = 0
         min_d = 0.
         c_7 = 0.
@@ -101,7 +102,7 @@ class NasaOne:
         return c_7 / 2  # The value is halved, because the calculation is done twice for each plane (can be optimized)
 
     def c_8(self):
-        r = 5  # ToDo an exact value is not specified in the paper
+        r = 5  # An exact value is not specified in the paper
         counter = 0
         min_h = 0.
         c_8 = 0.
@@ -175,7 +176,7 @@ class NasaOne:
         return var ** 0.5 / s
 
     def c_16(self):
-        delta_t = 3.  # ToDo an exact value is not specified in the paper
+        delta_t = 3. # An exact value is not specified in the paper
 
         def resolution_difficulty(alpha):
             # Normalized time of resolution initiation as a function of crossing angle

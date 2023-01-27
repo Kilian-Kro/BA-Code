@@ -1,16 +1,10 @@
-import random
-
-import geopy
-from geopy.units import nm
-
-from KPIs.gianzza import Gianazza
-from base_classes.Heading import Heading
-from base_classes.airplane import Airplane
+from KPIs.nasa_metric_one import NasaOne
+from KPIs.nasa_metric_two import NasaTwo
+from KPIs.wjthc import WJTHC
 from sector import Sector
 
 
 def main():
-
     sector1 = Sector('Test Sector', 0, 50000, [(11.381, 47.994),
                                                (11.376, 48.284),
                                                (11.860, 48.288),
@@ -44,8 +38,8 @@ def main():
     print(metron.walc())
     print(metron.wheadvar())
     print(metron.wbprox())
-    print(metron.wasp())
-
+    print(metron.wasp_vdf())
+   
     print("Nasa Additional")
     nasa_add = NasaAdditional(sector1)
     print(nasa_add.numhorizon())
@@ -57,7 +51,7 @@ def main():
     print(nasa_add.altvari())
     print(nasa_add.numbndy())
     print(nasa_add.aspect())
-
+    """
     print("Nasa One")
     nasa_one = NasaOne(sector1)
     print(nasa_one.c_1())
@@ -100,14 +94,14 @@ def main():
     print(wjthc.degrees_of_freedom_index())
     print(wjthc.coordination_taskload_index())
     """
-    print("Gianazza")
-    gianazza = Gianazza(sector1)
-    print(gianazza.v())
-    print(gianazza.nb())
-    print(gianazza.avg_vs())
-    print(gianazza.f15(5))
-    print(gianazza.f60(5))
-    print(gianazza.inter_hori())
+    # print("Gianazza")
+    # gianazza = Gianazza(sector1)
+    # print(gianazza.v())
+    # print(gianazza.nb())
+    # print(gianazza.avg_vs())
+    # print(gianazza.f15(5))
+    # print(gianazza.f60(5))
+    # print(gianazza.inter_hori())
 
 
     # sector2 = Sector('Test Sector', 0, 50000,
@@ -146,7 +140,7 @@ def main():
 # print(customKPI.average_in_sector_distance())
 
 
-"""
+
     print(sector2.is_pos_in_sector(48.4506278, 11.3911521))  # yes
     print(sector2.is_pos_in_sector(48.5307198, 12.3304832))  # no
     print(sector2.is_pos_in_sector(47.7887274, 12.2865378))  # no
@@ -159,12 +153,13 @@ def main():
                                    12.4484360))  # no
     print(sector2.is_pos_in_sector(49.0383776,
                                    11.6821396))  # no
-"""
+
 
 print(Heading.stat_sub(10, 10))  # 0
 print(Heading.stat_sub(10, 90))  # 280
 print(Heading.stat_sub(90, 180))
 # 340
+"""
 
 
 if __name__ == "__main__":

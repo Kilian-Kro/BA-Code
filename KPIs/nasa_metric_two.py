@@ -12,7 +12,6 @@ class NasaTwo:
         self.min_sep_hor = 10  # in nautical miles
         self.min_sep_vert = 1000  # in feet
 
-    # ToDo add comments to all functions
     def traffic_density_n(self):
         return len(self.sector.get_planes())
 
@@ -117,7 +116,7 @@ class NasaTwo:
     # helper functions
     # ----------------------------------------------------------------------------------------------------
     def are_not_in_violation(self, plane_1, plane_2):
-        # ToDO which plane determines if below of above 29000 feet
+        # Which plane determines if below of above 29000 feet -> what happens if one plane is above and the other below
         if plane_1.altitude > 29000:
             if self.dist_vertical(plane_1, plane_2) > self.min_sep_vert and self.dist_horizontal(plane_1,
                                                                                                  plane_2) > self.min_sep_hor:

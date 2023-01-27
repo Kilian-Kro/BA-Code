@@ -1,9 +1,12 @@
+from datetime import timedelta
+
 from geopy.distance import geodesic
 
 from base_classes.Heading import Heading
 from base_classes.sector import Sector
 
 
+# https://ntrs.nasa.gov/api/citations/19960055149/downloads/19960055149.pdf
 class Metron:
     def __init__(self, sector):
         self.sector: Sector = sector
@@ -11,12 +14,15 @@ class Metron:
         self.min_sep_hor = 10  # in nautical miles
         self.min_sep_vert = 1000  # in feet
 
+    # Number of planes in sector
     def wact(self):
         return len(self.sector.get_planes())
 
+    # Density of planes in sector
     def wden(self):
         return len(self.sector.get_planes()) / self.sector.sector_volume()
 
+    # Number of planes in proximity
     def wclap(self):
         threshold_min = 8
         threshold_max = 13
@@ -39,8 +45,9 @@ class Metron:
             for plane2 in self.sector.get_planes():
                 if plane != plane2:
                     if self.are_in_conflict(plane, plane2):
-                        conv_ang = Heading.subtract(max(plane.get_heading(), plane2.get_heading()), min(plane.get_heading(),
-                                                                                        plane2.get_heading()))
+                        conv_ang = Heading.stat_sub(max(plane.get_heading(), plane2.get_heading()),
+                                                    min(plane.get_heading(),
+                                                        plane2.get_heading()))
                         # if convang is between 180 and 150 or between 0 and 30, score is 1
                         if (150 < conv_ang < 180) or (0 < conv_ang < 30):
                             score += 1
@@ -56,17 +63,27 @@ class Metron:
 
         return score / 2
 
-    # ToDo add to list no duplicates might be wrong
+    # Planes in proximity to a conflict to a conflict situation
     def wconflict_nbrs(self):
-        list_of_planes = []
+        # Look for all planes currently in conflict and those that are not
+        planes_in_conflict = []
+        planes_not_in_conflict = []
         for plane in self.sector.get_planes():
             for plane2 in self.sector.get_planes():
                 if plane != plane2:
-                    if not self.are_in_conflict(plane, plane2) and self.dist_vertical(plane, plane2) < 2000 \
-                            and self.dist_horizontal(plane, plane2) < 10:
-                        self.add_to_list_no_duplicates(list_of_planes, plane, plane2)
+                    if self.are_in_conflict(plane, plane2):
+                        self.add_to_list_no_duplicates(planes_in_conflict, plane, plane2)
+                    else:
+                        self.add_to_list_no_duplicates(planes_not_in_conflict, plane, plane2)
 
-        return len(list_of_planes)
+        # For every plane not in conflict, check if it is in proximity to a conflict
+        planes_in_proximity_to_conflict = []
+        for plane in planes_not_in_conflict:
+            for plane2 in planes_in_conflict:
+                if self.dist_horizontal(plane, plane2) < 10 or self.dist_vertical(plane, plane2) < 2000:
+                    planes_in_proximity_to_conflict.append(plane)
+
+        return len(planes_in_proximity_to_conflict)
 
     # Score 1 for each conflict within 10 miles
     # Score 0.5 for each conflict within 20 miles
@@ -80,15 +97,18 @@ class Metron:
                         if self.sector.distance_to_border(plane) <= 10 and self.sector.distance_to_border(plane2) <= 10:
                             count += 1
                         # Score 0.5 for each conflict within 20 miles, but more than 10 miles
-                        elif 10 < self.sector.distance_to_border(plane) <= 20 and 10 < self.sector.distance_to_border(plane2) <= 20:
+                        elif 10 < self.sector.distance_to_border(plane) <= 20 and 10 < self.sector.distance_to_border(
+                                plane2) <= 20:
                             count += 0.5
                         # Is this only counted for one aircraft or both? AND / OR
                         # What score is given if one plane is 9 miles and one 11 miles away?
                         # 0.75 was chosen as the case is more severe than both planes being less than 20 miles apart,
-                        # but less severe than both planes being less than 10 miles apart
-                        elif self.sector.distance_to_border(plane) <= 10 and 10 < self.sector.distance_to_border(plane2) <= 20:
+                        # but less severe than both planes being less than 10 miles apart, this was not done in the paper
+                        elif self.sector.distance_to_border(plane) <= 10 and 10 < self.sector.distance_to_border(
+                                plane2) <= 20:
                             count += 0.75
-                        elif 10 < self.sector.distance_to_border(plane) <= 20 and self.sector.distance_to_border(plane2) <= 10:
+                        elif 10 < self.sector.distance_to_border(plane) <= 20 and self.sector.distance_to_border(
+                                plane2) <= 10:
                             count += 0.75
         return count
 
@@ -103,9 +123,16 @@ class Metron:
 
     # Number of bearing changes above a certain threshold
     def wheadvar(self):
-        # ToDo
-        pass
+        count = 0
+        # time_p = self.sector.get_passed_time() - timedelta(minutes=2)
+        # for plane in self.sector.get_planes():
+        #     for plane_past, time in self.sector.history_planes():
+        #         if plane == plane_past and time == time_p:
+        #             if Heading.subtract(plane.get_heading(), plane_past.get_heading()) > 10:
+        #                 count += 1
+        return count  # TODO new History structure
 
+    # Number of of planes close to the sectors border
     def wbprox(self):
         count = 0
         for plane in self.sector.get_planes():
@@ -115,9 +142,16 @@ class Metron:
 
     # The squared difference between the heading of each aircraft in a sector and the direction of the major axis
     # of the sector, weighted by the sector aspect ratio.
-    def wasp(self):
-        # ToDo
-        pass
+    def wasp_vdf(self):
+        count = 0
+        for plane in self.sector.get_planes():
+            for plane2 in self.sector.get_planes():
+                if plane != plane2:
+                    count = count + (Heading.stat_sub(plane.get_heading(), plane2.get_heading())) ** 2
+        n = len(self.sector.get_planes())
+        count = count / 2
+        count = 1 / (n * (n + 1)) * count
+        return count
 
     # -------------------------------------
     # helper functions

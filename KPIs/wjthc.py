@@ -17,11 +17,17 @@ class WJTHC:
     def aircraft_count(self):
         return len(self.sector.get_planes())  # / max([len(planes) for time, planes in self.sector.history_planes])
 
+    # The occupied volume was calculated as an ellipsoid with the following dimensions:
+    # Height: 0,164579 nm (=1000 ft)
+    # Circumference: 10 nm
+    # This represents the "bubble" around the aircraft that is occupied by the aircraft, which must not be entered
+    # by another aircraft, thus being occupied.
     def aircraft_density_one(self):
-        return len(self.sector.get_planes()) / self.sector.sector_volume()  # ToDO add occupied airspace
+        occupied_volume_per_plane = 68.94  # nm^3
+        return len(self.sector.get_planes()) * occupied_volume_per_plane / self.sector.sector_volume()
 
     def aircraft_density_two(self):
-        return len(self.sector.get_planes()) / self.sector.sector_volume()  # ToDo: Currently the same as
+        return len(self.sector.get_planes()) / self.sector.sector_volume()
         # aircraft_density_one
 
     # go through all pairs of planes in the sector and calculate their convergence angles
