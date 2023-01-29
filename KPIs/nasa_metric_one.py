@@ -114,6 +114,8 @@ class NasaOne:
                     counter += 1
                     if abs(i.get_altitude() - j.get_altitude()) < min_h:
                         min_h = abs(i.get_altitude() - j.get_altitude())
+            if min_h == 0:
+                min_h = 1.
             if counter > 0:
                 c_8 = c_8 + (counter / min_h)
             counter = 0
@@ -134,16 +136,19 @@ class NasaOne:
             for j in self.sector.get_planes():
                 if i != j and abs(i.get_altitude() - j.get_altitude()) < min_h:
                     min_h = abs(i.get_altitude() - j.get_altitude())
+
+        if min_h == 0:
+            return 0
         return 1 / min_h
 
     def c_11(self):
-        pass
+        return 0
 
     def c_12(self):
-        pass
+        return 0
 
     def c_13(self):
-        pass
+        return 0
 
     def c_14(self):
         # The variance of the speed of all planes in the sector

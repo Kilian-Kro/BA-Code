@@ -78,7 +78,7 @@ class Eurocontrol:
 
     def complexity_score(self):
         adj_den = self.adj_density()
-        s_i = (self.v_dif() / adj_den) + (self.h_dif() / adj_den) + (self.s_dif() / adj_den)
+        s_i = (self.v_dif_total() / adj_den) + (self.h_dif_total() / adj_den) + (self.s_dif_total() / adj_den)
         complexity_score = adj_den * s_i
         return round(complexity_score, 2)
 

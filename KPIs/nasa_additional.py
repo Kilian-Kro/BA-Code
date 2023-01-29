@@ -1,3 +1,5 @@
+import statistics
+
 from geopy import Point
 from geopy.distance import geodesic
 
@@ -47,7 +49,7 @@ class NasaAdditional:
         for plane in self.sector.get_planes():
             list_of_headings.append(plane.get_heading())
         mean = sum(list_of_headings) / len(list_of_headings)
-        variance = sum((x - mean) ** 2 for x in list_of_headings) - 1 / len(list_of_headings)
+        variance = statistics.variance(list_of_headings, mean)
         return variance
 
     # Squared difference between heading of each aircraft in a sector and direction of major axis
@@ -113,7 +115,7 @@ class NasaAdditional:
     # Redundant metric, same as Metron.wconf_bound()
     def confcount(self):
         # return Metron.wconf_bound()
-        pass
+        return 0
 
     # calculates the variance and mean of all altitudes in the sector
     def altvari(self):
@@ -121,8 +123,8 @@ class NasaAdditional:
         for plane in self.sector.get_planes():
             list_of_altitudes.append(plane.get_altitude())
         mean = sum(list_of_altitudes) / len(list_of_altitudes)
-        variance = sum((x - mean) ** 2 for x in list_of_altitudes) - 1 / len(list_of_altitudes)
-        return variance, mean
+        variance = statistics.variance(list_of_altitudes, mean)
+        return variance + mean
 
     # Number of aircraft within a threshold distance of the sector boundary
     def numbndy(self):

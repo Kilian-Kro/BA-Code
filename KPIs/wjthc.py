@@ -74,7 +74,7 @@ class WJTHC:
                             dist_vert < self.min_sep_vertical + potential_conf_buffer_vert:
                         dofi = dofi + 1
         #  ToDo find all planes that limit DOF
-        pass
+        return 0
 
     # idea: distance to sector boundary (is heading here important?) time to reach the points in question is easy, since
     # speed and distance are known

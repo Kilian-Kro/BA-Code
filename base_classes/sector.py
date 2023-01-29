@@ -174,6 +174,9 @@ class Sector:
     def get_sector_center(self):
         return self.sector_center
 
+    def set_current_planes(self, planes):
+        self.current_planes = planes
+
     def set_neighbor_sector_names(self, neighbor_sector_names):
         self.neighbor_sector_names = neighbor_sector_names
         total_number_of_neighbors = len(neighbor_sector_names)

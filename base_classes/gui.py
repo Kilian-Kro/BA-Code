@@ -1,10 +1,9 @@
-import tkinter
 from datetime import timedelta
 
 import customtkinter
+from PIL import Image, ImageTk
 from geopy.distance import geodesic
 from tkintermapview import TkinterMapView
-from PIL import Image, ImageTk
 
 from KPIs.eurocontrol import Eurocontrol
 from KPIs.gianzza import Gianazza
@@ -15,6 +14,7 @@ from KPIs.nasa_metric_two import NasaTwo
 from KPIs.wjthc import WJTHC
 from KPIs.workload_one import WorkLoadOne
 from KPIs.workloadtwo import WorkloadTwo
+from base_classes.airplane import Airplane
 from base_classes.sector import Sector
 
 customtkinter.set_default_color_theme("dark-blue")
@@ -191,21 +191,25 @@ class App(customtkinter.CTk):
 
         self.entry1 = customtkinter.CTkEntry(self.window_initial, placeholder_text="Latitude")
         self.entry1.grid(row=1, column=0, padx=20, pady=10)
+
         self.entry2 = customtkinter.CTkEntry(self.window_initial, placeholder_text="Longitude")
         self.entry2.grid(row=1, column=1, padx=20, pady=10)
 
         self.entry3 = customtkinter.CTkEntry(self.window_initial, placeholder_text="Latitude")
         self.entry3.grid(row=2, column=0, padx=20, pady=10)
+
         self.entry4 = customtkinter.CTkEntry(self.window_initial, placeholder_text="Longitude")
         self.entry4.grid(row=2, column=1, padx=20, pady=10)
 
         self.entry5 = customtkinter.CTkEntry(self.window_initial, placeholder_text="Latitude")
         self.entry5.grid(row=3, column=0, padx=20, pady=10)
+
         self.entry6 = customtkinter.CTkEntry(self.window_initial, placeholder_text="Longitude")
         self.entry6.grid(row=3, column=1, padx=20, pady=10)
 
         self.entry7 = customtkinter.CTkEntry(self.window_initial, placeholder_text="Latitude")
         self.entry7.grid(row=4, column=0, padx=20, pady=10)
+
         self.entry8 = customtkinter.CTkEntry(self.window_initial, placeholder_text="Longitude")
         self.entry8.grid(row=4, column=1, padx=20, pady=10)
 
@@ -303,6 +307,7 @@ class App(customtkinter.CTk):
         self.nasa_one = NasaOne(self.sector)
         self.nasa_two = NasaTwo(self.sector)
         self.whjthc = WJTHC(self.sector)
+        self.eurocontrol = Eurocontrol(self.sector)
         self.workload_one = WorkLoadOne(self.sector)
         self.workload_two = WorkloadTwo(self.sector)
 
@@ -376,6 +381,91 @@ class App(customtkinter.CTk):
         time2 = int(time / 10)
         self.slider_point_in_time.configure(state="normal", to=time, number_of_steps=time2)
 
+        # Callsign, Heading, Altitude, Speed, climbrate, pos_x, pos_y
+        scenario1 = [Airplane("Plane1", 180, 11000, 350, 0, 48.9275265, 11.1110859),
+                     Airplane("Plane2", 180, 15000, 400, 0, 48.9094778, 11.4530354),
+                     Airplane("Plane3", 180, 20000, 450, 0, 48.8462561, 11.7304402),
+                     Airplane("Plane4", 180, 25000, 500, 0, 48.8760706, 11.6494160),
+                     Airplane("Plane5", 180, 12000, 550, 0, 48.6588329, 11.5093403),
+                     Airplane("Plane6", 360, 15000, 400, 0, 48.1918610, 11.1365969),
+                     Airplane("Plane7", 360, 20000, 450, 0, 48.1222367, 11.5211184),
+                     Airplane("Plane8", 360, 25000, 430, 0, 48.0745445, 11.8342287),
+                     Airplane("Plane9", 360, 29000, 410, 0, 48.2942932, 11.6392214),
+                     Airplane("Plane10", 270, 27000, 700, 0, 48.5567486, 11.5719301)]
+
+        # 50 % More aircraft
+        scenario2 = [Airplane("Plane1", 180, 11000, 350, 0, 48.9275265, 11.1110859),
+                     Airplane("Plane2", 180, 15000, 400, 0, 48.9094778, 11.4530354),
+                     Airplane("Plane3", 180, 20000, 450, 0, 48.8462561, 11.7304402),
+                     Airplane("Plane4", 180, 25000, 500, 0, 48.8760706, 11.6494160),
+                     Airplane("Plane5", 180, 12000, 550, 0, 48.6588329, 11.5093403),
+                     Airplane("Plane6", 360, 15000, 400, 0, 48.1918610, 11.1365969),
+                     Airplane("Plane7", 360, 20000, 450, 0, 48.1222367, 11.5211184),
+                     Airplane("Plane8", 360, 25000, 430, 0, 48.0745445, 11.8342287),
+                     Airplane("Plane9", 360, 29000, 410, 0, 48.2942932, 11.6392214),
+                     Airplane("Plane10", 270, 27000, 700, 0, 48.5567486, 11.5719301),
+                     Airplane("Plane11", 180, 125000, 350, 0, 48.9052291, 11.2704345),
+                     Airplane("Plane12", 360, 25000, 400, 0, 48.3196103, 11.3294860),
+                     Airplane("Plane13", 360, 15000, 450, 0, 48.4727979, 11.6906616),
+                     Airplane("Plane14", 180, 29000, 500, 0, 48.7370498, 11.2457153),
+                     Airplane("Plane15", 180, 11000, 550, 0, 48.2602175, 11.5190002)]
+
+        # Altitude Variation
+        scenario3 = [Airplane("Plane1", 180, 11000, 350, -3000, 48.9275265, 11.1110859),
+                     Airplane("Plane2", 180, 15000, 400, 2000, 48.9094778, 11.4530354),
+                     Airplane("Plane3", 180, 20000, 450, -1000, 48.8462561, 11.7304402),
+                     Airplane("Plane4", 180, 25000, 500, 2000, 48.8760706, 11.6494160),
+                     Airplane("Plane5", 180, 12000, 550, -3000, 48.6588329, 11.5093403),
+                     Airplane("Plane6", 360, 15000, 400, 2000, 48.1918610, 11.1365969),
+                     Airplane("Plane7", 360, 20000, 450, -1000, 48.1222367, 11.5211184),
+                     Airplane("Plane8", 360, 25000, 430, 2000, 48.0745445, 11.8342287),
+                     Airplane("Plane9", 360, 29000, 410, -3000, 48.2942932, 11.6392214),
+                     Airplane("Plane10", 270, 27000, 700, 2000, 48.5567486, 11.5719301),
+                     Airplane("Plane11", 180, 125000, 350, -1000, 48.9052291, 11.2704345),
+                     Airplane("Plane12", 360, 25000, 400, 2000, 48.3196103, 11.3294860),
+                     Airplane("Plane13", 360, 15000, 450, -3000, 48.4727979, 11.6906616),
+                     Airplane("Plane14", 180, 29000, 500, 2000, 48.7370498, 11.2457153),
+                     Airplane("Plane15", 180, 11000, 550, -1000, 48.2602175, 11.5190002)]
+
+        # Heading Variation
+        scenario4 = [Airplane("Plane1", 270, 11000, 350, -3000, 48.9275265, 11.1110859),
+                     Airplane("Plane2", 120, 15000, 400, 2000, 48.9094778, 11.4530354),
+                     Airplane("Plane3", 290, 20000, 450, -1000, 48.8462561, 11.7304402),
+                     Airplane("Plane4", 230, 25000, 500, 2000, 48.8760706, 11.6494160),
+                     Airplane("Plane5", 250, 12000, 550, -3000, 48.6588329, 11.5093403),
+                     Airplane("Plane6", 30, 15000, 400, 2000, 48.1918610, 11.1365969),
+                     Airplane("Plane7", 10, 20000, 450, -1000, 48.1222367, 11.5211184),
+                     Airplane("Plane8", 80, 25000, 430, 2000, 48.0745445, 11.8342287),
+                     Airplane("Plane9", 120, 29000, 410, -3000, 48.2942932, 11.6392214),
+                     Airplane("Plane10", 320, 27000, 700, 2000, 48.5567486, 11.5719301),
+                     Airplane("Plane11", 110, 125000, 350, -1000, 48.9052291, 11.2704345),
+                     Airplane("Plane12", 75, 25000, 400, 2000, 48.3196103, 11.3294860),
+                     Airplane("Plane13", 5, 15000, 450, -3000, 48.4727979, 11.6906616),
+                     Airplane("Plane14", 150, 29000, 500, 2000, 48.7370498, 11.2457153),
+                     Airplane("Plane15", 170, 11000, 550, -1000, 48.2602175, 11.5190002)]
+
+        # Conflicts: Plane 4 auf 20000, now Conflict with Plane 3
+        # Plane 7 now at 11000, Plane 15 Conflict
+        # Plane 5 auf 27000, now Conflict with Plane 10
+        # Plane1 moved, so now Conflict with Plane 11
+        scenario5 = [Airplane("Plane1", 270, 12500, 350, -3000, 48.8965293, 11.3518952),
+                     Airplane("Plane2", 120, 15000, 400, 2000, 48.9094778, 11.4530354),
+                     Airplane("Plane3", 290, 20000, 450, -1000, 48.8462561, 11.7304402),
+                     Airplane("Plane4", 230, 20000, 500, 2000, 48.8760706, 11.6494160),
+                     Airplane("Plane5", 250, 27000, 550, -3000, 48.6588329, 11.5093403),
+                     Airplane("Plane6", 30, 15000, 400, 2000, 48.1918610, 11.1365969),
+                     Airplane("Plane7", 10, 11000, 450, -1000, 48.1222367, 11.5211184),
+                     Airplane("Plane8", 80, 25000, 430, 2000, 48.0745445, 11.8342287),
+                     Airplane("Plane9", 120, 29000, 410, -3000, 48.2942932, 11.6392214),
+                     Airplane("Plane10", 320, 27000, 700, 2000, 48.5567486, 11.5719301),
+                     Airplane("Plane11", 110, 125000, 350, -1000, 48.9052291, 11.2704345),
+                     Airplane("Plane12", 75, 25000, 400, 2000, 48.3196103, 11.3294860),
+                     Airplane("Plane13", 5, 15000, 450, -3000, 48.4727979, 11.6906616),
+                     Airplane("Plane14", 150, 29000, 500, 2000, 48.7370498, 11.2457153),
+                     Airplane("Plane15", 170, 11000, 550, -1000, 48.2602175, 11.5190002)]
+
+        self.sector.set_current_planes(scenario5)
+
         planes_to_draw = self.sector.current_planes
 
         def get_distance(speed_knts):
@@ -386,8 +476,16 @@ class App(customtkinter.CTk):
         plane_image = ImageTk.PhotoImage(
             Image.open("C:/Users/Kilian/PycharmProjects/pythonProject2/images/small_red_icon.png").resize((10, 10)))
         for plane in planes_to_draw:
-            plane_info = plane.get_callsign() + "\n" + str(plane.get_altitude()) + "\n" + str(
-                plane.get_speed()) + "\n" + str(plane.get_heading())
+            if plane.get_climbrate() > 0:
+                plane_info = plane.get_callsign() + " \u25B2 " + "\n A:" + str(plane.get_altitude()) + "\n S:" + str(
+                    plane.get_speed()) + "\n H:" + str(plane.get_heading()) + "\n C:" + str(plane.get_climbrate())
+            elif plane.get_climbrate() < 0:
+                plane_info = plane.get_callsign() + " \u25BC " + "\n A:" + str(plane.get_altitude()) + "\n S:" + str(
+                    plane.get_speed()) + "\n H:" + str(plane.get_heading()) + "\n C:" + str(plane.get_climbrate())
+            else:
+                plane_info = plane.get_callsign() + "\n A:" + str(plane.get_altitude()) + "\n S:" + str(
+                    plane.get_speed()) + "\n H:" + str(plane.get_heading()) + "\n C:" + str(plane.get_climbrate())
+
             marker = self.map_widget.set_marker(plane.get_position_x(), plane.get_position_y(), text=plane_info,
                                                 icon=plane_image)
             current_pos = (plane.get_position_x(), plane.get_position_y())
@@ -470,8 +568,10 @@ class App(customtkinter.CTk):
         nasa_two = tabview.add("Nasa Two")
         wjthc = tabview.add("WJTHC")
         additional = tabview.add("Nasa Additional")
+        eurocontrol = tabview.add("Eurocontrol")
         wl_1 = tabview.add("Workload 1")
         wl_2 = tabview.add("Workload 2")
+
 
         # Metron Aviation
         metron.grid_rowconfigure(9, weight=1)
@@ -524,7 +624,7 @@ class App(customtkinter.CTk):
 
         label_wasp = customtkinter.CTkLabel(metron, text="WASP")
         label_wasp.grid(row=9, column=0, padx=20, pady=10)
-        label_wasp_value = customtkinter.CTkLabel(metron, text=str(self.metron_avaiation.wasp()))
+        label_wasp_value = customtkinter.CTkLabel(metron, text=str(self.metron_avaiation.wasp_vdf()))
         label_wasp_value.grid(row=9, column=1, padx=20, pady=10)
 
         # Gianazza
@@ -796,6 +896,15 @@ class App(customtkinter.CTk):
         label_aspect_value = customtkinter.CTkLabel(additional, text=str(self.nasa_additional.aspect()))
         label_aspect_value.grid(row=8, column=1, padx=20, pady=10)
 
+        # Eurocontrol
+        eurocontrol.grid_rowconfigure(2, weight=1)
+        eurocontrol.grid_columnconfigure(2, weight=1)
+
+        label_euro_one = customtkinter.CTkLabel(eurocontrol, text="Score")
+        label_euro_one.grid(row=0, column=0, padx=20, pady=10)
+        label_euro_two = customtkinter.CTkLabel(eurocontrol, text=str(self.eurocontrol.complexity_score()))
+        label_euro_two.grid(row=0, column=1, padx=20, pady=10)
+
         # Workload One
         wl_1.grid_rowconfigure(2, weight=1)
         wl_1.grid_columnconfigure(2, weight=1)
@@ -839,9 +948,6 @@ class App(customtkinter.CTk):
         label_total_wl.grid(row=4, column=0, padx=20, pady=10)
         label_total_wl_value = customtkinter.CTkLabel(wl_2, text=str(self.workload_two.workload()))
         label_total_wl_value.grid(row=4, column=1, padx=20, pady=10)
-
-        button = customtkinter.CTkButton(master=self.window8, text="Close", command=self.button_event_8)
-        button.grid(row=1, column=0, padx=20, pady=10)
 
     def button_event_8(self):
         self.window8.destroy()

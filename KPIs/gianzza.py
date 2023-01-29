@@ -4,6 +4,7 @@ from geopy import Point
 from geopy.distance import geodesic
 from shapely import LineString
 
+from base_classes.Heading import Heading
 from base_classes.sector import Sector
 
 
@@ -76,10 +77,11 @@ class Gianazza:
                     # By checking if lines from their current position to their new position intersect
                     if LineString([(p_plane.longitude, p_plane.latitude),
                                    (new_pos_plane.longitude, new_pos_plane.latitude)]).intersects(
-                            LineString([(p_other_plane.longitude, p_other_plane.latitude), (
-                            new_pos_other_plane.longitude,
-                            new_pos_other_plane.latitude)])) and not other_plane.get_heading().subtract(
-                        20) < plane.get_heading() < other_plane.get_heading().add(20):
+                        LineString([(p_other_plane.longitude, p_other_plane.latitude), (
+                                new_pos_other_plane.longitude,
+                                new_pos_other_plane.latitude)])) and not Heading.stat_sub(other_plane.get_heading(),
+                                                                                          20) < plane.get_heading() < Heading.stat_add(
+                        other_plane.get_heading(), 20):
                         potential_crossings += 1
 
         # Divide by two because each crossing is counted twice, since double for loop
