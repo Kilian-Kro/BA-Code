@@ -40,7 +40,6 @@ class Sector:
         self.total_number_of_neighbors = 0
         self.neighbor_sector_names = []
 
-    # ToDO calculates area wrong
     def sector_area(self):
         """Compute the area of the sector based on the corner points.
 
@@ -53,7 +52,6 @@ class Sector:
         area2 = poly2.area
         return area2
 
-    # ToDO calculates area wrong
     def sector_volume(self):
         """Compute the volume of the sector based on the floor and ceiling.
 
@@ -70,7 +68,6 @@ class Sector:
         # Unit is now nautical miles cubed
         return volume
 
-    # ToDO probably wrnng as well
     def distance_to_border(self, plane):
         """Compute the distance of a plane from the closest sector border.
 

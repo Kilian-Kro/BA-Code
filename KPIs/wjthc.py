@@ -60,9 +60,10 @@ class WJTHC:
 
         return sci / 2 # Every pair of planes is counted twice
 
+    # NOT IMPLEMENTED
     def degrees_of_freedom_index(self):
-        # ToDO: define DOF, especially the vertical component is unclear
         # Currently would be too much guesswork to implement a meaningful DOF index
+        # as the paper does not provide a definition of DOF
         dofi = 0
         potential_conf_buffer_vert = 1000  # feet
         potential_conf_buffer_hori = 3  # nautical miles
@@ -74,7 +75,6 @@ class WJTHC:
                     if dist_hor < self.min_sep_horizontal + potential_conf_buffer_hori or \
                             dist_vert < self.min_sep_vertical + potential_conf_buffer_vert:
                         dofi = dofi + 1
-        #  ToDo find all planes that limit DOF
         return 0
 
     # idea: distance to sector boundary (is heading here important?) time to reach the points in question is easy, since

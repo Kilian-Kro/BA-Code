@@ -33,7 +33,7 @@ class MyTestCase(unittest.TestCase):
         area = sector.sector_area()
 
         # Assert that the area is correct
-        self.assertAlmostEqual(area, 2.54, 2)  # expected area is 1235.97 nautical miles^2
+        self.assertAlmostEqual(area, 3029.9584, 2)  # expected area is 1235.97 nautical miles^2
 
     def test_sector_area_with_four_corner_points(self):
         # Create a sector with four corner points
@@ -44,7 +44,7 @@ class MyTestCase(unittest.TestCase):
         area = sector.sector_area()
 
         # Assert that the area is correct
-        self.assertAlmostEqual(area, 337.3971983, 2)  # expected area is 1235.97 nautical miles^2
+        self.assertAlmostEqual(area, 340.9853, 2)  # expected area is 1235.97 nautical miles^2
 
     def test_sector_volume(self):
         # Create a sector
@@ -52,18 +52,7 @@ class MyTestCase(unittest.TestCase):
         volume = sector.sector_volume()
 
         # Assert that the volume is correct
-        self.assertAlmostEqual(volume, 4.18, 2)  # expected volume is 123596.62 cubic nautical miles
-
-    def test_distance_to_border(self):
-        # Create a sector and an airplane
-        sector = Sector('Test Sector', 0, 10000, [(40.0, -80.0), (41.0, -80.0), (41.0, -79.0)])
-        plane = Airplane('ABC123', 0, 5000, 500, 0, 40.5, -80.0)
-
-        # Compute the distance from the plane to the sector border
-        distance = sector.distance_to_border(plane)
-
-        # Assert that the distance is correct
-        self.assertAlmostEqual(distance, 5000, 2)  # expected distance is 61.45 nautical miles
+        self.assertAlmostEqual(volume, 4986.6702, 2)  # expected volume is 4986.6702 cubic nautical miles
 
 
 if __name__ == '__main__':

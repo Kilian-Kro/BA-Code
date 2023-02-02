@@ -161,7 +161,8 @@ class NasaAdditional:
     # -------------------------------------------------------------
 
     def are_in_conflict(self, plane_1, plane_2):
-        # ToDO which plane determines if below of above 29000 feet
+        # If one plane is above and one below, which separation requirements apply?
+        # Currently plane 1 determines the separation requirements
         if plane_1.altitude > 29000:
             if self.dist_vertical(plane_1, plane_2) < self.min_sep_vert_high and \
                     self.dist_horizontal(plane_1, plane_2) < self.min_sep_hor:

@@ -11,7 +11,8 @@ from base_classes.Heading import Heading
 class Eurocontrol:
     def __init__(self, sector):
         self.sector = sector
-        # ToDo Add subdivision of the sector into a grid
+        # NOT IMPLEMENTED
+        # Not done here as it was deemed to complex and unsuited for this application
 
     def avg_time_in_cell(self):
         # Has to be claculated for each airspace to be analysed individually

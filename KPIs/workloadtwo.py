@@ -49,7 +49,9 @@ class WorkloadTwo:
         cor3 = 4.60 * 56.38  # Military units
         cor4 = 4.14 * 41.18  # Adjacent ACC
 
+        # NOT IMPLEMENTED
         # Not viable in this Thesis, since it would require multiple sectors
+        # And military aircraft, both are not in scope
 
         wl_cdr = 4.61 * (cor1 + cor2 + cor3 + cor4)
         return round(wl_cdr, 2)
@@ -71,6 +73,7 @@ class WorkloadTwo:
     def __str__(self):
         return "Workload: " + str(self.workload()) + "in Sector" + self.sector.name
 
+    # Checks if aircraft are in conflict
     def are_in_conflict(self, plane_1, plane_2):
         min_sep_hor = 10  # in nautical miles
         min_sep_vert_low = 1000  # in feet below 29,000 feet

@@ -7,7 +7,7 @@ from base_classes.sector import Sector
 
 
 # above 29,000 feet, separation required is 2000ft and 5 nm
-# below 29,000 feet
+# below 29,000 feet, 1000ft and 5 nm
 class NasaOne:
     def __init__(self, sector):
         self.sector: Sector = sector
@@ -143,6 +143,7 @@ class NasaOne:
             return 0
         return 1 / min_h
 
+    # C11-C13 are not implemented here, as they were deemed to complex to implement in a reasonable amount of time
     def c_11(self):
         return 0
 
