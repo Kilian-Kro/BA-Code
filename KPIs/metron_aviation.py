@@ -65,7 +65,7 @@ class Metron:
 
     # Planes in proximity to a conflict to a conflict situation
     def wconflict_nbrs(self):
-        # Look for all planes currently in conflict and those that are not
+        # Look for all planes currently in conflict and those that are not and add them to the corresponding list
         planes_in_conflict = []
         planes_not_in_conflict = []
         for plane in self.sector.get_planes():
@@ -77,12 +77,13 @@ class Metron:
                         self.add_to_list_no_duplicates(planes_not_in_conflict, plane, plane2)
 
         # For every plane not in conflict, check if it is in proximity to a conflict
-        planes_in_proximity_to_conflict = []
+        planes_in_proximity_to_conflict = set()
         for plane in planes_not_in_conflict:
             for plane2 in planes_in_conflict:
                 if self.dist_horizontal(plane, plane2) < 10 or self.dist_vertical(plane, plane2) < 2000:
-                    planes_in_proximity_to_conflict.append(plane)
+                    planes_in_proximity_to_conflict.add(plane)
 
+        # Set() is used here as it automatically removes duplicates
         return len(planes_in_proximity_to_conflict)
 
     # Score 1 for each conflict within 10 miles
@@ -132,7 +133,7 @@ class Metron:
         #                 count += 1
         return count  # TODO new History structure
 
-    # Number of of planes close to the sectors border
+    # Number of planes close to the sectors border
     def wbprox(self):
         count = 0
         for plane in self.sector.get_planes():

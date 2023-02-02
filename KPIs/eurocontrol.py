@@ -1,12 +1,9 @@
 import geopy
-from shapely import LineString
-from shapely.geometry import Polygon
-from shapely.prepared import prep
 import numpy as np
 from geopy.units import nm
-from shapely.ops import split
-import geopandas
+from shapely import LineString
 from shapely.geometry import MultiPolygon, Polygon
+from shapely.ops import split
 
 from base_classes.Heading import Heading
 
@@ -17,9 +14,11 @@ class Eurocontrol:
         # ToDo Add subdivision of the sector into a grid
 
     def avg_time_in_cell(self):
+        # Has to be claculated for each airspace to be analysed individually
         avg_time_in_cell = 1 / 20  # of an hour
         return avg_time_in_cell
 
+    # Counts the number of planes cruising, climbing and descending
     def v_dif(self):
         asc_pl = 0
         desc_pl = 0
@@ -35,6 +34,7 @@ class Eurocontrol:
         hours_vert = vert_inter * (self.avg_time_in_cell() ** 2)
         return hours_vert
 
+    # Counts all interactions between planes whose headings differ by more than 20 degrees
     def h_dif(self):
         interactions = 0
         for plane in self.sector.get_planes():
@@ -43,9 +43,12 @@ class Eurocontrol:
                     # if plane.getHeading differs by more than 20 degrees from plane2.getHeading
                     if Heading.stat_sub(plane.get_heading(), plane2.get_heading()) > 20:
                         interactions += 1
+
+        interactions = interactions / 2  # because each interaction is counted twice
         hours_heading = interactions * (self.avg_time_in_cell() ** 2)
         return hours_heading
 
+    # Counts all interactions between planes whose speeds differ by more than 35 knots
     def s_dif(self):
         interactions = 0
         # If the speed of two planes differs by more than 35 knots, count an interaction
@@ -54,13 +57,15 @@ class Eurocontrol:
                 if plane != plane2:
                     if plane.get_speed() - plane2.get_speed() > 35 or plane.get_speed() - plane2.get_speed() < -35:
                         interactions += 1
+
+        interactions = interactions / 2  # because each interaction is counted twice
         hours_speed = interactions * (self.avg_time_in_cell() ** 2)
         return hours_speed
 
     def flight_hours(self):
         fh = self.v_dif() + self.h_dif() + self.s_dif()
         if fh == 0:
-            return 1
+            return 1  # to avoid division by zero in later functions
         return fh
 
     def v_dif_total(self):
@@ -82,6 +87,8 @@ class Eurocontrol:
         complexity_score = adj_den * s_i
         return round(complexity_score, 2)
 
+    # An Algorithm to divide a rectangle into squares of equal area
+    # Currently not used
     def get_squares_from_rect(self):
         """
         Divide a Rectangle (Shapely Polygon) into squares of equal area.

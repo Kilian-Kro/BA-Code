@@ -132,14 +132,6 @@ class App(customtkinter.CTk):
                                                                   command=self.create_traffic_data, state="disabled")
         self.create_traffic_data_button.grid(pady=(20, 0), padx=(20, 20), row=8, column=0)
 
-        self.pit_label = customtkinter.CTkLabel(self.frame_left, text="Point in Time", anchor="w")
-        self.pit_label.grid(row=9, column=0, padx=(20, 20), pady=(20, 0))
-        self.slider_point_in_time = customtkinter.CTkSlider(master=self.frame_left, from_=0, to=120,
-                                                            orientation="horizontal",
-                                                            state="disabled", number_of_steps=120,
-                                                            command=self.adjust_point_in_time)
-        self.slider_point_in_time.grid(pady=(20, 0), padx=(20, 20), row=10, column=0)
-
         self.KPI_button = customtkinter.CTkButton(master=self.frame_left, text="Show KPIs",
                                                   command=self.kpi_button)  # , state="disabled")
         self.KPI_button.grid(pady=(20, 0), padx=(20, 20), row=11, column=0)
@@ -379,92 +371,6 @@ class App(customtkinter.CTk):
         button.grid(row=1, column=0, padx=20, pady=10, sticky="SE")
 
         time2 = int(time / 10)
-        self.slider_point_in_time.configure(state="normal", to=time, number_of_steps=time2)
-
-        # Callsign, Heading, Altitude, Speed, climbrate, pos_x, pos_y
-        scenario1 = [Airplane("Plane1", 180, 11000, 350, 0, 48.9275265, 11.1110859),
-                     Airplane("Plane2", 180, 15000, 400, 0, 48.9094778, 11.4530354),
-                     Airplane("Plane3", 180, 20000, 450, 0, 48.8462561, 11.7304402),
-                     Airplane("Plane4", 180, 25000, 500, 0, 48.8760706, 11.6494160),
-                     Airplane("Plane5", 180, 12000, 550, 0, 48.6588329, 11.5093403),
-                     Airplane("Plane6", 360, 15000, 400, 0, 48.1918610, 11.1365969),
-                     Airplane("Plane7", 360, 20000, 450, 0, 48.1222367, 11.5211184),
-                     Airplane("Plane8", 360, 25000, 430, 0, 48.0745445, 11.8342287),
-                     Airplane("Plane9", 360, 29000, 410, 0, 48.2942932, 11.6392214),
-                     Airplane("Plane10", 270, 27000, 700, 0, 48.5567486, 11.5719301)]
-
-        # 50 % More aircraft
-        scenario2 = [Airplane("Plane1", 180, 11000, 350, 0, 48.9275265, 11.1110859),
-                     Airplane("Plane2", 180, 15000, 400, 0, 48.9094778, 11.4530354),
-                     Airplane("Plane3", 180, 20000, 450, 0, 48.8462561, 11.7304402),
-                     Airplane("Plane4", 180, 25000, 500, 0, 48.8760706, 11.6494160),
-                     Airplane("Plane5", 180, 12000, 550, 0, 48.6588329, 11.5093403),
-                     Airplane("Plane6", 360, 15000, 400, 0, 48.1918610, 11.1365969),
-                     Airplane("Plane7", 360, 20000, 450, 0, 48.1222367, 11.5211184),
-                     Airplane("Plane8", 360, 25000, 430, 0, 48.0745445, 11.8342287),
-                     Airplane("Plane9", 360, 29000, 410, 0, 48.2942932, 11.6392214),
-                     Airplane("Plane10", 270, 27000, 700, 0, 48.5567486, 11.5719301),
-                     Airplane("Plane11", 180, 125000, 350, 0, 48.9052291, 11.2704345),
-                     Airplane("Plane12", 360, 25000, 400, 0, 48.3196103, 11.3294860),
-                     Airplane("Plane13", 360, 15000, 450, 0, 48.4727979, 11.6906616),
-                     Airplane("Plane14", 180, 29000, 500, 0, 48.7370498, 11.2457153),
-                     Airplane("Plane15", 180, 11000, 550, 0, 48.2602175, 11.5190002)]
-
-        # Altitude Variation
-        scenario3 = [Airplane("Plane1", 180, 11000, 350, -3000, 48.9275265, 11.1110859),
-                     Airplane("Plane2", 180, 15000, 400, 2000, 48.9094778, 11.4530354),
-                     Airplane("Plane3", 180, 20000, 450, -1000, 48.8462561, 11.7304402),
-                     Airplane("Plane4", 180, 25000, 500, 2000, 48.8760706, 11.6494160),
-                     Airplane("Plane5", 180, 12000, 550, -3000, 48.6588329, 11.5093403),
-                     Airplane("Plane6", 360, 15000, 400, 2000, 48.1918610, 11.1365969),
-                     Airplane("Plane7", 360, 20000, 450, -1000, 48.1222367, 11.5211184),
-                     Airplane("Plane8", 360, 25000, 430, 2000, 48.0745445, 11.8342287),
-                     Airplane("Plane9", 360, 29000, 410, -3000, 48.2942932, 11.6392214),
-                     Airplane("Plane10", 270, 27000, 700, 2000, 48.5567486, 11.5719301),
-                     Airplane("Plane11", 180, 125000, 350, -1000, 48.9052291, 11.2704345),
-                     Airplane("Plane12", 360, 25000, 400, 2000, 48.3196103, 11.3294860),
-                     Airplane("Plane13", 360, 15000, 450, -3000, 48.4727979, 11.6906616),
-                     Airplane("Plane14", 180, 29000, 500, 2000, 48.7370498, 11.2457153),
-                     Airplane("Plane15", 180, 11000, 550, -1000, 48.2602175, 11.5190002)]
-
-        # Heading Variation
-        scenario4 = [Airplane("Plane1", 270, 11000, 350, -3000, 48.9275265, 11.1110859),
-                     Airplane("Plane2", 120, 15000, 400, 2000, 48.9094778, 11.4530354),
-                     Airplane("Plane3", 290, 20000, 450, -1000, 48.8462561, 11.7304402),
-                     Airplane("Plane4", 230, 25000, 500, 2000, 48.8760706, 11.6494160),
-                     Airplane("Plane5", 250, 12000, 550, -3000, 48.6588329, 11.5093403),
-                     Airplane("Plane6", 30, 15000, 400, 2000, 48.1918610, 11.1365969),
-                     Airplane("Plane7", 10, 20000, 450, -1000, 48.1222367, 11.5211184),
-                     Airplane("Plane8", 80, 25000, 430, 2000, 48.0745445, 11.8342287),
-                     Airplane("Plane9", 120, 29000, 410, -3000, 48.2942932, 11.6392214),
-                     Airplane("Plane10", 320, 27000, 700, 2000, 48.5567486, 11.5719301),
-                     Airplane("Plane11", 110, 125000, 350, -1000, 48.9052291, 11.2704345),
-                     Airplane("Plane12", 75, 25000, 400, 2000, 48.3196103, 11.3294860),
-                     Airplane("Plane13", 5, 15000, 450, -3000, 48.4727979, 11.6906616),
-                     Airplane("Plane14", 150, 29000, 500, 2000, 48.7370498, 11.2457153),
-                     Airplane("Plane15", 170, 11000, 550, -1000, 48.2602175, 11.5190002)]
-
-        # Conflicts: Plane 4 auf 20000, now Conflict with Plane 3
-        # Plane 7 now at 11000, Plane 15 Conflict
-        # Plane 5 auf 27000, now Conflict with Plane 10
-        # Plane1 moved, so now Conflict with Plane 11
-        scenario5 = [Airplane("Plane1", 270, 12500, 350, -3000, 48.8965293, 11.3518952),
-                     Airplane("Plane2", 120, 15000, 400, 2000, 48.9094778, 11.4530354),
-                     Airplane("Plane3", 290, 20000, 450, -1000, 48.8462561, 11.7304402),
-                     Airplane("Plane4", 230, 20000, 500, 2000, 48.8760706, 11.6494160),
-                     Airplane("Plane5", 250, 27000, 550, -3000, 48.6588329, 11.5093403),
-                     Airplane("Plane6", 30, 15000, 400, 2000, 48.1918610, 11.1365969),
-                     Airplane("Plane7", 10, 11000, 450, -1000, 48.1222367, 11.5211184),
-                     Airplane("Plane8", 80, 25000, 430, 2000, 48.0745445, 11.8342287),
-                     Airplane("Plane9", 120, 29000, 410, -3000, 48.2942932, 11.6392214),
-                     Airplane("Plane10", 320, 27000, 700, 2000, 48.5567486, 11.5719301),
-                     Airplane("Plane11", 110, 125000, 350, -1000, 48.9052291, 11.2704345),
-                     Airplane("Plane12", 75, 25000, 400, 2000, 48.3196103, 11.3294860),
-                     Airplane("Plane13", 5, 15000, 450, -3000, 48.4727979, 11.6906616),
-                     Airplane("Plane14", 150, 29000, 500, 2000, 48.7370498, 11.2457153),
-                     Airplane("Plane15", 170, 11000, 550, -1000, 48.2602175, 11.5190002)]
-
-        self.sector.set_current_planes(scenario5)
 
         planes_to_draw = self.sector.current_planes
 
@@ -571,7 +477,6 @@ class App(customtkinter.CTk):
         eurocontrol = tabview.add("Eurocontrol")
         wl_1 = tabview.add("Workload 1")
         wl_2 = tabview.add("Workload 2")
-
 
         # Metron Aviation
         metron.grid_rowconfigure(9, weight=1)

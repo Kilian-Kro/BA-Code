@@ -21,6 +21,8 @@ class Sector:
         self.floor: int = floor
         self.ceiling: int = ceiling
         # Should be a list of Tuples (lat, lon), i.e [(0., 1.), (2., 3.)]
+        # Order is important, the first point is the starting point and the last point is the end point
+        # Each point has to be neighbors with the previous and next point
         self.corner_points = corner_points
         self.current_planes = []
         # This is the most inefficient part of the code
@@ -45,19 +47,10 @@ class Sector:
                Returns:
                    float: the area of the sector in nautical miles squared
                """
-        # Attempt No2
-        # Create a Polygon object
-        # poly = Polygon(self.corner_points)
-        # area = poly.area
-        # print(area)
-
         poly_coords = [(x2, y2, z2) for x2, y2, z2 in map(self.get_cartesian, [lat for lat, lon in self.corner_points],
                                                           [lon for lat, lon in self.corner_points])]
         poly2 = Polygon(poly_coords)
         area2 = poly2.area
-
-        # area_km2 = area / 10 ** 6
-        # return area * 4457.336319511756  # geopy.units.nautical(meters=area)
         return area2
 
     # ToDO calculates area wrong
@@ -106,7 +99,7 @@ class Sector:
         # the distance to the border is the minimum of the distance to the ceiling, floor and border
         return min(distance_to_ceiling, distance_to_floor, distance_to_border)
 
-    # ToDo probably wrong as well
+    # Checks if the given position is inside the sector
     def is_pos_in_sector(self, x, y):
         poly_coords = [(x2, y2, z2) for x2, y2, z2 in map(self.get_cartesian, [lat for lat, lon in self.corner_points],
                                                           [lon for lat, lon in self.corner_points])]
@@ -122,10 +115,6 @@ class Sector:
         y = r * np.cos(lat) * np.sin(lon)
         z = r * np.sin(lat)
         return x, y, z
-
-    # @staticmethod
-    # def get_cartesian(lat, lon):
-    #     return lat, lon
 
     @staticmethod
     def distance_between_two_planes(plane1, plane2):
@@ -186,6 +175,7 @@ class Sector:
         self.current_planes = planes
         self.passed_time += timedelta(seconds=time)
 
+    # Function is only for testing purposes, not used for any KPIs
     def create_traffic_loop(self, number_of_planes, variance):
         variance = 0
         time = 10

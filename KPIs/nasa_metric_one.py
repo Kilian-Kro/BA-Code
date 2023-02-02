@@ -1,5 +1,6 @@
 import math
 
+import geopy.units
 from geopy.distance import geodesic
 
 from base_classes.sector import Sector
@@ -63,7 +64,8 @@ class NasaOne:
 
     def c_6(self):
         n = len(self.sector.get_planes())
-        s_h = 5 / 2000
+        # Minimum horizontal separation divided by minimum vertical separation
+        s_h = geopy.units.nautical(5) / geopy.units.nautical(feet=2000)
         helper = 0.
         d_ij = 0.
         h_ij = 0.

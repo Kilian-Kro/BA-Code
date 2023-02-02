@@ -21,7 +21,7 @@ class Gianazza:
         return len(self.sector.get_planes())
 
     # Avg_vs  is simply the average vertical speed of controlled aircraft
-    # All vetical speeds are summarized and then divided by total number of aircraft
+    # All vertical speeds are summarized and then divided by total number of aircraft
     def avg_vs(self):
         vertical_count = 0
         for plane in self.sector.get_planes():

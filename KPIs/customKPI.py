@@ -5,6 +5,7 @@ from geopy.distance import geodesic
 from base_classes.sector import Sector
 
 
+# Additional Task, not taken from Literature
 class CustomKPI:
     def __init__(self, sector):
         self.sector: Sector = sector
@@ -53,4 +54,3 @@ class CustomKPI:
             total_time += self.time_one_plane(plane)
 
         return total_time.total_seconds() / len(self.all_unique_planes)
-

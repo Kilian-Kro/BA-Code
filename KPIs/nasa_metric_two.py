@@ -8,10 +8,14 @@ from base_classes.sector import Sector
 class NasaTwo:
     def __init__(self, sector):
         self.sector: Sector = sector
+        # The time threshold is not specified in the paper, so it was set to 2 minutes here
+        # This means that for every indicator where a "change" in something is measured,
+        # the change between now and two minutes ago is measured
         self.time_threshold = 2  # in minutes
         self.min_sep_hor = 10  # in nautical miles
         self.min_sep_vert = 1000  # in feet
 
+    # Number of planes in the sector
     def traffic_density_n(self):
         return len(self.sector.get_planes())
 
@@ -30,6 +34,8 @@ class NasaTwo:
         return count_of_changed_headings
 
     # similar to the heading change function this function checks if the speed changed more than 10 knots
+    # The current structure of past planes is a list of tuples (time, list of planes), which makes this function
+    # a bit more complicated
     def speed_change_ns(self):
         count_of_changed_speeds = 0
         for plane in self.sector.get_planes():
@@ -53,6 +59,7 @@ class NasaTwo:
                     break
         return count_of_changed_altitudes
 
+    # Number of planes that are in proximity of 0 to 5 miles horizontally but not in violation
     def distance_between_0_and_5_s5(self):
         count_of_planes = 0
         for plane in self.sector.get_planes():
@@ -63,6 +70,7 @@ class NasaTwo:
                         count_of_planes += 1
         return count_of_planes / 2
 
+    # Number of planes that are in proximity of 5 to 10 miles horizontally but not in violation
     def distance_between_5_and_10_s10(self):
         count_of_planes = 0
         for plane in self.sector.get_planes():
@@ -73,6 +81,7 @@ class NasaTwo:
                         count_of_planes += 1
         return count_of_planes / 2
 
+    # Number of planes that are in proximity of 10 to 25 miles horizontally but not in violation
     def distance_between_0_and_25_s25(self):
         count_of_planes = 0
         for plane in self.sector.get_planes():
@@ -86,6 +95,7 @@ class NasaTwo:
                             count_of_planes += 1
         return count_of_planes / 2
 
+    # Number of planes that are in proximity of 25 to 40 miles horizontally but not in violation
     def distance_between_25_and_40_s40(self):
         count_of_planes = 0
         for plane in self.sector.get_planes():
@@ -99,6 +109,7 @@ class NasaTwo:
                             count_of_planes += 1
         return count_of_planes / 2
 
+    # Number of planes that are in proximity of 40 to 70 miles horizontally but not in violation
     def distance_between_40_and_70_s70(self):
         count_of_planes = 0
         for plane in self.sector.get_planes():

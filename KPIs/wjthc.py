@@ -44,7 +44,7 @@ class WJTHC:
                 if plane != other_plane:
                     conv_angle = conv_ang(plane.get_heading(), other_plane.get_heading())
                     cri = cri + (7 - (conv_angle / 30)) ** 2
-        return cri
+        return cri / 2  # Every pair of planes is counted twice
 
     def separation_criticality_index(self):
         sci = 0
@@ -58,10 +58,11 @@ class WJTHC:
                     si = (sih + siv) / 2
                     sci = sci + (3 - si) ** 2
 
-        return sci
+        return sci / 2 # Every pair of planes is counted twice
 
     def degrees_of_freedom_index(self):
         # ToDO: define DOF, especially the vertical component is unclear
+        # Currently would be too much guesswork to implement a meaningful DOF index
         dofi = 0
         potential_conf_buffer_vert = 1000  # feet
         potential_conf_buffer_hori = 3  # nautical miles
@@ -92,6 +93,9 @@ class WJTHC:
             time_to_ccp = (dist_to_border - ccp) / speed
 
             if time_to_ccp <= 600:  # 10 minutes in seconds
+                # The paper provides two calculations which do not produce the same results
+                # It is never specified which one is correct / better, so both are implemented here
+
                 # Calculation Option 1
                 cti = cti + (1 / time_to_ccp + (time_to_border - time_to_ccp) ** 2)
 

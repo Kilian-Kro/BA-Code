@@ -58,6 +58,7 @@ class NasaAdditional:
         list_of_headings = []
         for plane in self.sector.get_planes():
             list_of_headings.append(plane.get_heading())
+        # Get the middle value of the list
         median = sorted(list_of_headings)[len(list_of_headings) // 2]
 
         squared_difference = 0
@@ -77,7 +78,7 @@ class NasaAdditional:
         else:
             return (sum(list_of_headings) / 2) / len(list_of_headings)  # /2 because every pair is counted twice
 
-    # Number of aircraft in close proximity to conflict situations
+    # Number of aircraft in proximity to conflict situations
     # Depending on the interpretation this is either the same as Metron.wconflict_nbrs()
     # Or it counts aircraft that are close to being in conflict themselves
     # As the same paper would likely not use the same definition for both, I chose the latter
@@ -136,6 +137,8 @@ class NasaAdditional:
         return count_of_planes
 
     # Major axis length divided by minor axis length of a sector
+    # This could be interpreted in a number of ways, here it was interpreted as dividing the longest
+    # distance between two points by the shortest distance between two points
     def aspect(self):
         # Set min to 0 so that the first distance is always larger than the min
         # Set max to inf so that the first distance is always smaller than the max
