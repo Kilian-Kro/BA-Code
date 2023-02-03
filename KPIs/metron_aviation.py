@@ -61,7 +61,7 @@ class Metron:
                         elif conv_ang == 90:
                             score += 0
 
-        return score / 2
+        return score / 2  # Halved because the double for loop counts each pair twice
 
     # Planes in proximity to a conflict to a conflict situation
     def wconflict_nbrs(self):
@@ -104,7 +104,7 @@ class Metron:
                         # Is this only counted for one aircraft or both? AND / OR
                         # What score is given if one plane is 9 miles and one 11 miles away?
                         # 0.75 was chosen as the case is more severe than both planes being less than 20 miles apart,
-                        # but less severe than both planes being less than 10 miles apart, this was not done in the paper
+                        # but less severe than both planes being less than 10 miles apart, was not done in the paper
                         elif self.sector.distance_to_border(plane) <= 10 and 10 < self.sector.distance_to_border(
                                 plane2) <= 20:
                             count += 0.75
@@ -113,25 +113,35 @@ class Metron:
                             count += 0.75
         return count
 
-    # Count all aircraft where aircraft.getClimbrate != 0
+    # Count all aircraft that are either climbing or descending
     def walc(self):
         count = 0
         for plane in self.sector.get_planes():
             # This is done to allow for some tolerance
-            if - 200 < plane.get_climbrate() < 200:
+            if not - 200 < plane.get_climbrate() < 200:
                 count += 1
         return count
 
     # Number of bearing changes above a certain threshold
     def wheadvar(self):
         count = 0
-        # time_p = self.sector.get_passed_time() - timedelta(minutes=2)
-        # for plane in self.sector.get_planes():
-        #     for plane_past, time in self.sector.history_planes():
-        #         if plane == plane_past and time == time_p:
-        #             if Heading.subtract(plane.get_heading(), plane_past.get_heading()) > 10:
-        #                 count += 1
-        return count  # TODO new History structure
+        time_p = self.sector.get_passed_time() - timedelta(minutes=2)
+
+        # Save the list of planes from 2 minutes ago
+        past_planes = []
+        for time, planes in self.sector.get_history_planes():
+            if time == time_p:
+                past_planes = planes
+
+        # Check if the plane is in the list of planes from 2 minutes ago, if so, check if the heading has changed
+        for plane in self.sector.get_planes():
+            for plane2 in past_planes:
+                if plane == plane2:
+                    hdg = plane.get_heading()
+                    if not hdg - 10 < plane2.get_heading() < hdg + 10:
+                        count += 1
+
+        return count
 
     # Number of planes close to the sectors border
     def wbprox(self):

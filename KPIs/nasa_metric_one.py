@@ -1,4 +1,5 @@
 import math
+import statistics
 
 import geopy.units
 from geopy.distance import geodesic
@@ -6,26 +7,32 @@ from geopy.distance import geodesic
 from base_classes.sector import Sector
 
 
-# above 29,000 feet, separation required is 2000ft and 5 nm
-# below 29,000 feet, 1000ft and 5 nm
+# Everything is based on this paper: https://arc.aiaa.org/doi/pdf/10.2514/6.2001-5242
+# Looking through the Code a lot of potential for increasing performance is there
+# Everything could be summarized in one function, but this is more readable this way
 class NasaOne:
     def __init__(self, sector):
         self.sector: Sector = sector
 
+    # The number of aircraft divided by the maximum number of aircraft
     def c_1(self):
         n = len(self.sector.get_planes())
-        # !!!!!!!!!!!!! see below !!!!!!!!!!!
-        n_max = 100  # This is defined as the highest number of planes ever in the sector, no good way of obtaining this
+        # n_max is the historical, or the acceptable, maximum number of aircraft in the sector
+        # Currently no good way to determine this, so it is set to 100
+        n_max = 100
         return n / n_max
 
+    # Ratio of climbing aircraft to total number of aircraft in the sector
     def c_2(self):
         n = len(self.sector.get_planes())
         n_cl = 0
         for plane in self.sector.get_planes():
+            # Allows for some tolerance, as the climb rate is not always exact
             if plane.get_climbrate() > 200:
                 n_cl += 1
         return n_cl / n
 
+    # Ratio of level aircraft to total number of aircraft in the sector
     def c_3(self):
         n = len(self.sector.get_planes())
         n_lv = 0
@@ -34,6 +41,7 @@ class NasaOne:
                 n_lv += 1
         return n_lv / n
 
+    # Ratio of descending aircraft to total number of aircraft in the sector
     def c_4(self):
         n = len(self.sector.get_planes())
         n_ds = 0
@@ -42,14 +50,16 @@ class NasaOne:
                 n_ds += 1
         return n_ds / n
 
+    # the mean weighted horizontal separation distance
     def c_5(self):
         n = len(self.sector.get_planes())
+        # Scaling factor given in the paper
         s_h = 5 / 2000
         helper = 0.
-        d_ij = 0.
-        h_ij = 0.
-        w_ij = 0.
-        w_ij_d_ij = 0.
+        d_ij = 0.  # Horizontal distance between two planes
+        h_ij = 0.  # Vertical distance between two planes
+        w_ij = 0.  # Associated weighting factor
+        w_ij_d_ij = 0.  # w_ij * d_ij
         for i in self.sector.get_planes():
             for j in self.sector.get_planes():
                 if i != j:
@@ -58,18 +68,20 @@ class NasaOne:
                     w_ij = w_ij + d_ij ** 2 + s_h ** 2 * h_ij ** 2  # Equation 6 in paper
                     w_ij_d_ij = w_ij * d_ij
                     helper = helper + (w_ij_d_ij / w_ij)  # Equation 5 in paper
+                    w_ij = 0.  # Reset w_ij for next iteration
         if helper == 0:
             return 0
         return n / helper
 
+    # The mean weighted vertical separation distance
     def c_6(self):
         n = len(self.sector.get_planes())
         # Minimum horizontal separation divided by minimum vertical separation
         s_h = geopy.units.nautical(5) / geopy.units.nautical(feet=2000)
         helper = 0.
-        d_ij = 0.
-        h_ij = 0.
-        w_ij = 0.
+        d_ij = 0.  # Horizontal distance between two planes
+        h_ij = 0.  # Vertical distance between two planes
+        w_ij = 0.  # Associated weighting factor
         w_ij_h_ij = 0.
         for i in self.sector.get_planes():
             for j in self.sector.get_planes():
@@ -79,20 +91,23 @@ class NasaOne:
                     w_ij = w_ij + d_ij ** 2 + s_h ** 2 * h_ij ** 2  # Equation 6 in paper
                     w_ij_h_ij = w_ij * h_ij
                     helper = helper + (w_ij_h_ij / w_ij)  # Equation 12 in paper
-                    # Both variables are set to 0. again, to calculate the next pair of planes
+                    w_ij = 0.  # Reset w_ij for next iteration
         if helper == 0:
             return 0
         return n / helper
 
+    # Minimum horizontal distance between two planes
     def c_7(self):
-        delta_h = 300  # An exact value is not specified in the paper
+        delta_h = 300  # Unit: ft | An exact value is not specified in the paper
         counter = 0
         min_d = 0.
         c_7 = 0.
+        # Find the closest plane to each plane within the same altitude band
         for i in self.sector.get_planes():
             counter = 0
             min_d = float('inf')
             for j in self.sector.get_planes():
+                # Equation 13 in paper
                 if i != j and i.get_altitude() - (delta_h / 2) < j.get_altitude() < i.get_altitude() + (delta_h / 2):
                     counter += 1
                     if self.dist_horizontal(i, j) < min_d:
@@ -103,27 +118,32 @@ class NasaOne:
             min_d = float('inf')
         return c_7 / 2  # The value is halved, because the calculation is done twice for each plane (can be optimized)
 
+    # Minimum vertical distance between two planes
     def c_8(self):
-        r = 5  # An exact value is not specified in the paper
+        r = 5  # Unit: nm | An exact value is not specified in the paper
         counter = 0
         min_h = 0.
         c_8 = 0.
+        # Find the closest (vertical distance) plane for each plane within a radius of 5 nm
         for i in self.sector.get_planes():
             counter = 0
             min_h = float('inf')
             for j in self.sector.get_planes():
+                # Equation 16 and 17 in the paper
                 if i != j and self.dist_vertical(i, j) < r:
                     counter += 1
                     if abs(i.get_altitude() - j.get_altitude()) < min_h:
                         min_h = abs(i.get_altitude() - j.get_altitude())
+
             if min_h == 0:
-                min_h = 1.
+                min_h = 1.  # Avoid division by zero
             if counter > 0:
                 c_8 = c_8 + (counter / min_h)
             counter = 0
             min_h = float('inf')
         return c_8 / 2  # The value is halved, because the calculation is done twice for each plane (can be optimized)
 
+    # Closest Horizontal distance between two planes, Equation 18 in paper
     def c_9(self):
         min_d = float('inf')
         for i in self.sector.get_planes():
@@ -132,6 +152,7 @@ class NasaOne:
                     min_d = self.dist_horizontal(i, j)
         return 1 / min_d
 
+    # Closest Vertical separation distance between two planes, Equation 19 in paper
     def c_10(self):
         min_h = float('inf')
         for i in self.sector.get_planes():
@@ -153,38 +174,39 @@ class NasaOne:
     def c_13(self):
         return 0
 
+    # The variance of the speed of all planes in the sector, Equation 29 in paper
     def c_14(self):
-        # The variance of the speed of all planes in the sector
         n = len(self.sector.get_planes())
         s = 0.
+        list_of_speeds = []
         for plane in self.sector.get_planes():
             s += plane.get_speed()
+            list_of_speeds.append(plane.get_speed())
         s = s / n
+        # s is now the mean speed of all planes in the sector
         var = 0.
-        for plane in self.sector.get_planes():
-            var += (plane.get_speed() - s) ** 2
-        if n == 0:
-            return 0
-        var = var / n
+        # calculate variance
+        var = statistics.variance(list_of_speeds, s)
         return var
 
+    # The standard deviation of the speed of all planes in the sector divided by the mean speed, Equation 30 in paper
     def c_15(self):
-        # The standard deviation of the speed of all planes in the sector divided by the mean speed
         n = len(self.sector.get_planes())
         s = 0.
+        list_of_speeds = []
         for plane in self.sector.get_planes():
             s += plane.get_speed()
+            list_of_speeds.append(plane.get_speed())
         s = s / n
-        var = 0.
-        for plane in self.sector.get_planes():
-            var += (plane.get_speed() - s) ** 2
-        var = var / n
-        if n == 0:
-            return 0
-        return var ** 0.5 / s
+        # s is now the mean speed of all planes in the sector
+        stdev = 0.
+        # calculate standard deviation
+        statistics.stdev(list_of_speeds)
+        return stdev / s
 
+    # Conflict resolution difficulty, Equation 32 in paper
     def c_16(self):
-        delta_t = 3. # An exact value is not specified in the paper
+        delta_t = 3.  # An exact value is not specified in the paper
 
         def resolution_difficulty(alpha):
             # Normalized time of resolution initiation as a function of crossing angle
@@ -215,6 +237,7 @@ class NasaOne:
                     # calculating crossing angle
                     tau = min(abs(xij), 2 * math.pi - abs(xij))
                     complexity += resolution_difficulty(tau)
+
         return complexity
 
     @staticmethod

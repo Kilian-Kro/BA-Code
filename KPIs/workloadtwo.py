@@ -1,6 +1,6 @@
-from geopy.distance import geodesic
+from datetime import timedelta
 
-from base_classes.Heading import Heading
+from geopy.distance import geodesic
 
 
 class WorkloadTwo:
@@ -13,29 +13,25 @@ class WorkloadTwo:
         return round(wl_mon, 2)
 
     def wl_cdr(self):
-        cdr1 = 3.61 * 127.76
-        cdr2 = 4.20 * 145.84
-        cdr3 = 3.88 * 123.90
-        cdr4 = 4.39 * 132.18
-        cdr5 = 4.64 * 188.59
+        # Weighting factor * conflict resolution time * number of conflicts
+        cdr1 = 3.61 * 127.76  # conflicts between aircraft on the same track and level
+        cdr2 = 4.20 * 145.84  # conflicts between aircraft on crossing tracks at the same level
+        cdr3 = 3.88 * 123.90  # conflicts between climbing or descending aircraft on the same track
+        cdr4 = 4.39 * 132.18  # conflicts between climbing or descending aircraft on crossing tracks
+        cdr5 = 4.64 * 188.59  # conflicts between climbing or descending aircraft on reciprocal tracks
 
         for plane in self.sector.get_planes():
             for other_plane in self.sector.get_planes():
                 if plane != other_plane and self.are_in_conflict(plane, other_plane):
                     if plane.get_altitude() - 100 < other_plane.get_altitude() < plane.get_altitude() + 100:
-                        if Heading.stat_sub(plane.get_heading(), 35) < other_plane.get_heading() < Heading.stat_add(
-                                plane.get_heading(), 35):
+                        if plane.get_heading() - 35 < other_plane.get_heading() < plane.get_heading() + 35:
                             cdr1 += 1
                         else:
                             cdr2 += 1
                     else:
-                        if Heading.stat_sub(plane.get_heading(), 35) < other_plane.get_heading() < Heading.stat_add(
-                                plane.get_heading(), 35):
+                        if plane.get_heading() - 35 < other_plane.get_heading() < plane.get_heading() + 35:
                             cdr3 += 1
-                        elif Heading.stat_add(plane.get_heading(), 35) < other_plane.get_heading() < Heading.stat_add(
-                                plane.get_heading(), 135) or Heading.stat_sub(plane.get_heading(),
-                                                                              35) < other_plane.get_heading() < Heading.stat_sub(
-                            plane.get_heading(), 135):
+                        elif plane.get_heading() + 35 < other_plane.get_heading() < 135 or plane.get_heading() - 35 > other_plane.get_heading() > plane.get_heading() - 135:
                             cdr4 += 1
                         else:
                             cdr5 += 1
@@ -57,14 +53,42 @@ class WorkloadTwo:
         return round(wl_cdr, 2)
 
     def wl_acm(self):
-        acm1 = 4.49 * 23.99
-        acm2 = 3.53 * 19.07
-        acm3 = 4.17 * 23.31
-        acm4 = 3.43 * 16.29
+        # Weighting factor * clearance time * number of aircraft
+        acm1 = 4.49 * 23.99  # flight level change
+        acm2 = 3.53 * 19.07  # speed change
+        acm3 = 4.17 * 23.31  # heading change
+        # NOT IMPLEMENTED, as there is no way to measure this in the current setup
+        acm4 = 3.43 * 16.29  # route originally filed in the flight plan, is changed by the aircraft or the controller
 
-        # ToDo: rewrite using new History data structure
+        count_acm1 = 0
+        count_acm2 = 0
+        count_acm3 = 0
 
-        wl_acm = 4.29 * (acm1 + acm2 + acm3 + acm4)
+        # No timedelta for "change" was specified, but as it is impossible to look into the future, changes are measured
+        # form now compared to two minutes ago.
+        time_p = self.sector.get_passed_time() - timedelta(minutes=2)
+        # Save the list of planes from 2 minutes ago
+        past_planes = []
+        for time, planes in self.sector.get_history_planes():
+            if time == time_p:
+                past_planes = planes
+
+        # if the parameter X of a plane is not the same as the parameter X of the same plane 2 minutes ago, add 1 to the
+        # counter for that parameter
+        for plane in self.sector.get_planes():
+            for plane2 in past_planes:
+                if plane == plane2:
+                    # Buffer of 200 feet +/- to account for incorrect altitude readings
+                    if not plane.get_altitude() - 200 < plane2.get_altitude() < plane.get_altitude() + 200:
+                        count_acm1 += 1
+                    # Buffer of 10 knots +/- to account for incorrect speed readings
+                    if not plane.get_speed() - 10 < plane2.get_speed() < plane.get_speed() + 10:
+                        count_acm2 += 1
+                    # Buffer of 5 degrees +/- to account for incorrect heading readings
+                    if not plane.get_heading() - 5 < plane2.get_heading() < plane.get_heading() + 5:
+                        count_acm3 += 1
+
+        wl_acm = 4.29 * (acm1 * count_acm1 + acm2 * count_acm2 + acm3 * count_acm3)
         return round(wl_acm, 2)
 
     def workload(self):

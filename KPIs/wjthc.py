@@ -64,17 +64,17 @@ class WJTHC:
     def degrees_of_freedom_index(self):
         # Currently would be too much guesswork to implement a meaningful DOF index
         # as the paper does not provide a definition of DOF
-        dofi = 0
-        potential_conf_buffer_vert = 1000  # feet
-        potential_conf_buffer_hori = 3  # nautical miles
-        for plane in self.sector.get_planes():
-            for other_plane in self.sector.get_planes():
-                if plane != other_plane:
-                    dist_hor = self.dist_horizontal(plane, other_plane)
-                    dist_vert = self.dist_vertical(plane, other_plane)
-                    if dist_hor < self.min_sep_horizontal + potential_conf_buffer_hori or \
-                            dist_vert < self.min_sep_vertical + potential_conf_buffer_vert:
-                        dofi = dofi + 1
+        # dofi = 0
+        # potential_conf_buffer_vert = 1000  # feet
+        # potential_conf_buffer_hori = 3  # nautical miles
+        # for plane in self.sector.get_planes():
+        #     for other_plane in self.sector.get_planes():
+        #         if plane != other_plane:
+        #             dist_hor = self.dist_horizontal(plane, other_plane)
+        #             dist_vert = self.dist_vertical(plane, other_plane)
+        #             if dist_hor < self.min_sep_horizontal + potential_conf_buffer_hori or \
+        #                     dist_vert < self.min_sep_vertical + potential_conf_buffer_vert:
+        #                 dofi = dofi + 1
         return 0
 
     # idea: distance to sector boundary (is heading here important?) time to reach the points in question is easy, since

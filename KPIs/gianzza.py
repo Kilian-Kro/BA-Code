@@ -73,7 +73,8 @@ class Gianazza:
                         kilometers=get_distance(other_plane.get_speed())).destination(
                         p_other_plane, other_plane.get_heading())
 
-                    # Check if the planes will cross paths in timeframe and if the angle between the planes is greater than 20 degrees
+                    # Check if the planes will cross paths in timeframe and if the angle between the planes is greater
+                    # than 20 degrees
                     # By checking if lines from their current position to their new position intersect
                     if LineString([(p_plane.longitude, p_plane.latitude),
                                    (new_pos_plane.longitude, new_pos_plane.latitude)]).intersects(

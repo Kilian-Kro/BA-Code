@@ -42,7 +42,7 @@ class Eurocontrol:
             for plane2 in self.sector.get_planes():
                 if plane != plane2:
                     # if plane.getHeading differs by more than 20 degrees from plane2.getHeading
-                    if Heading.stat_sub(plane.get_heading(), plane2.get_heading()) > 20:
+                    if plane.get_heading() - 20 < plane2.get_heading() or plane.get_heading() + 20 > plane2.get_heading():
                         interactions += 1
 
         interactions = interactions / 2  # because each interaction is counted twice
